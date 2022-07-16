@@ -111,7 +111,6 @@ function App() {
         view='week'
 
         taskView={'false'}
-        //view={selectedView}
 
 
        
