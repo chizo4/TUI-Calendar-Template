@@ -1,175 +1,207 @@
-// react imports
+/**
+ * Project name here...
+ * 
+ * Author: Filip J. Cierkosz
+ * 
+ * Date: 07/2022
+ */
+
+
 import React, { useCallback, useRef } from "react";
 import * as ReactDOMClient from 'react-dom/client';
 
-// basic stylesheet
-import "./styles.css";
-
-// react-select imports
-import Select from 'react-select';
-
-// font awesome imports
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleChevronLeft } from '@fortawesome/free-solid-svg-icons';
-import { faCircleChevronRight } from "@fortawesome/free-solid-svg-icons";
-import { faCalendarDay } from "@fortawesome/free-solid-svg-icons";
-
-// bootstrap imports
-import 'bootstrap/dist/css/bootstrap.css';
-
-// tui-calendar imports
 import Calendar from '@toast-ui/react-calendar';
 import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import 'tui-calendar/dist/tui-calendar.css';
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
 
-// moment imports
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCircleChevronLeft, faCircleChevronRight, faCalendarDay } from '@fortawesome/free-solid-svg-icons';
+
 import moment from 'moment';
+import Select from 'react-select';
+import 'bootstrap/dist/css/bootstrap.css';
+import "./styles.css";
 
 
-//import { ISchedule, ICalendarInfo } from "tui-calendar";
-
-
-
-
-
-let calendar;
-
-// set sample calendars
-
-
-// set options for the Select component
-const viewOptions = [
-  { value: 'week', label: 'Weekly View' },
-  { value: 'month', label: 'Monthly View' },
-  { value: 'day', label: 'Daily View' }
-]
-
-const calendarTheme = {
-  'week.timegridOneHour.height': '36px',
-  'week.timegridHalfHour.height': '18px',
-};
-
-const templates = {
-  milestone: function (schedule) {
-    return;
+class CalendarComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.calendarRef = React.createRef();
+    this.viewOptions = [
+      { value: 'week', label: 'Weekly View' },
+      { value: 'month', label: 'Monthly View' },
+      { value: 'day', label: 'Daily View' }
+    ];
+    this.theme = {
+      'week.timegridOneHour.height': '36px',
+      'week.timegridHalfHour.height': '18px',
+    };
+    this.state = { 
+      selectedViewType: 'week', 
+      renderDate: ''
+    };
   }
-};
 
-/*
+  handleShowPrev = () => {
+    const calendar = this.calendarRef.current.getInstance();
+    calendar.prev();
+    this.setupDateHeader();
+  };
 
-%div#calendar-nav{:style => "display: flex; justify-content: space-between; padding: 1%;"}
-  %div#btn-container
-    %i#prev-week-btn.fas.fa-chevron-circle-left.fa-2x{:style => "cursor: pointer;"}
-    %i#today-btn.fas.fa-calendar-day.fa-2x{:style => "cursor: pointer;"}
-    %i#next-week-btn.fas.fa-chevron-circle-right.fa-2x{:style => "cursor: pointer;"}
+  handleShowCurr = () => {
+    const calendar = this.calendarRef.current.getInstance();
+    calendar.today();
+    this.setupDateHeader();
+  }
 
-  %div#curr-month-year{:style => "font-size: 2rem;"}
+  handleShowNext = () => {
+    const calendar = this.calendarRef.current.getInstance();
+    calendar.next();
+    this.setupDateHeader();
+  }
 
-  %select#selection-view.form-select{:style => "width: 200px;"}
-    %option{:value => "week", :selected => "selected"} Weekly View
-    %option{:value => "month"} Monthly View
-    %option{:value => "day"} Daily View
+  handleViewSelection = (currViewType) => {
+    this.setState({ selectedViewType: currViewType.value }, () => {
+      this.setupDateHeader();
+    });
+  }
 
-*/
+  setupDateHeader = () => {
+    let currDate;
+    const startDate = this.calendarRef.current.getInstance().getDateRangeStart().toDate();
+    const endDate = this.calendarRef.current.getInstance().getDateRangeEnd().toDate();
+  
+    if (this.calendarRef.current.getInstance().getViewName() === 'day') {
+      currDate = moment(startDate).format('D MMMM YYYY');
+    } else if (this.calendarRef.current.getInstance().getViewName() === 'month') {
+      currDate = moment(startDate).add(15, "days").format('MMMM YYYY');
+    } else {
+      currDate = `${moment(startDate).format('D MMM YYYY')} - ${moment(endDate).format('D MMM YYYY')}`;
+    }
 
-// main function
-function App() {
-  return (
-    <div className="calendar-container">
+    this.setState({ renderDate: currDate });
+  }
 
-      <div className="calendar-nav">
-        <div className="btn-container">
-          <FontAwesomeIcon icon={faCircleChevronLeft} className="fa-2x prev-btn" />
-          <FontAwesomeIcon icon={faCalendarDay} className="fa-2x today-btn" />
-          <FontAwesomeIcon icon={faCircleChevronRight} className="fa-2x next-btn" />
+  // handle click on schedule
+  // onClickSchedule = useCallback((event) => {
+  //   const { calendarId, id } = event.schedule;
+  //   const el = cal.current.calendarInst.getElement(id, calendarId);
+
+  //   console.log(e, el.getBoundingClientRect());
+  // }, []);
+  // onClickSchedule = () => {
+  //   console.log('clicked the schedule...');
+  // }
+
+  // onBeforeCreateSchedule = () => {
+  //   console.log('before creation of new schedule...');
+  // }
+
+  handleCalendar = () => {
+    console.log('clicked calendar');
+    // this.calendarRef.current.getInstance().on({
+    //   'beforeCreateSchedule': function(event) {
+    //     // saveSchedule(event);
+    //     console.log('about to save something new...')
+    //   },
+    //   'beforeUpdateSchedule': function(event) {
+    //     const schedule = event.schedule;
+    //     const updates = event.changes;
+    //     //calendar.updateSchedule(schedule.id, schedule.calendarId, updates);
+    //     console.log('about to update something...')
+    //   },
+    //   'beforeDeleteSchedule': function(event) {
+    //     //calendar.deleteSchedule(event.schedule.id, event.schedule.calendarId);
+    //     console.log('about to delete some event...')
+    //   }
+    // });
+  }
+  
+
+  render() {
+    const { currViewType } = this.state;
+
+    return (
+      <div className="calendar-container">
+        <div className="calendar-nav">
+          <div className="btn-container">
+            <FontAwesomeIcon icon={faCircleChevronLeft} className="fa-2x prev-btn" 
+              onClick={this.handleShowPrev} />
+            <FontAwesomeIcon icon={faCalendarDay} className="fa-2x today-btn"
+              onClick={this.handleShowCurr} />
+            <FontAwesomeIcon icon={faCircleChevronRight} className="fa-2x next-btn" 
+              onClick={this.handleShowNext} />
+          </div>
+
+          <div className="curr-date" >{this.state.renderDate}</div>
+
+          <Select
+            className="view-selection"
+            options={this.viewOptions}
+            defaultValue={{ value: 'week', label: 'Weekly View' }} 
+            value={currViewType}
+            onChange={this.handleViewSelection}
+          />
         </div>
 
-        <div className="curr-date">date to be added here...</div>
+        <Calendar
+          // defining view (just the way it looks)
+          height="85vh"
+          view={this.state.selectedViewType}
+          theme={this.theme}
+            
+          // functions
+          ref={ this.calendarRef }
+          disableDblClick={true}
+          disableClick={false}
+          isReadOnly={false}
+          useCreationPopup
+          useDetailPopup
 
-        <Select
-          options={viewOptions}
-          defaultValue={{ value: 'week', label: 'Weekly View' }} 
-          className="view-selection"
+          // functions to add events
+          onClickSchedule
+          onBeforeCreateSchedule
+
+          // testing 
+          onClick={this.handleCalendar}
+
+
+          // calendars
+          schedules = {[
+            {
+              id: '0',
+              name: 'Work',
+              color: '#ffffff',
+              bgColor: '#11ed2a',
+              dragBgColor: '#11ed2a',
+              borderColor: '#11ed2a'
+            },
+            {
+              id: '1',
+              name: 'Studies',
+              color: '#ffffff',
+              bgColor: '#ed1114',
+              dragBgColor: '#ed1114',
+              borderColor: '#ed1114'
+            },
+            {
+              id: '2',
+              name: 'Physical Activity',
+              color: '#ffffff',
+              bgColor: '#ed1114',
+              dragBgColor: '#ed1114',
+              borderColor: '#ed1114'
+            }
+          ]}
         />
       </div>
-
-      <Calendar
-        height="85vh"
-        theme={calendarTheme}
-        disableDblClick={true}
-        disableClick={false}
-        isReadOnly={false}
-        useCreationPopup={true}
-        useDetailPopup={true}
-        
-
-        
-
-        //ref={cal}
-        view='week'
-
-        taskView={'false'}
-
-
-       
-        
-
-        // schedules={schedules}
-        // onClickSchedule={onClickSchedule}
-        // onBeforeCreateSchedule={onBeforeCreateSchedule}
-        // onBeforeDeleteSchedule={onBeforeDeleteSchedule}
-        // onBeforeUpdateSchedule={onBeforeUpdateSchedule}
-
-        
-        schedules = {[
-          {
-            id: '0',
-            name: 'Work',
-            color: '#ffffff',
-            bgColor: '#11ed2a',
-            dragBgColor: '#11ed2a',
-            borderColor: '#11ed2a'
-          },
-          {
-            id: '1',
-            name: 'Studies',
-            color: '#ffffff',
-            bgColor: '#ed1114',
-            dragBgColor: '#ed1114',
-            borderColor: '#ed1114'
-          },
-          {
-            id: '2',
-            name: 'Sport',
-            color: '#ffffff',
-            bgColor: '#ed1114',
-            dragBgColor: '#ed1114',
-            borderColor: '#ed1114'
-          }
-        ]}
-      />
-        
-
-
-
-      
-    
-    </div>
-  );
+    );
+  }
 }
 
 
-// rendering in root
 const container = document.getElementById('root');
 const root = ReactDOMClient.createRoot(container);
-root.render(<App />);
-
-
-
-
-
-
-
-
+root.render(<CalendarComponent />);

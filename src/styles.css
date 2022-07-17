@@ -1,12 +1,12 @@
-#wrapper {
-
+#app {
+    z-index: -1;
 }
 
 .calendar-container {
     width: 85%;
     margin: auto;
     margin-top: 1%;
-    border: 1px solid red;;
+    border: 2px solid red;;
 }
 
 .calendar-nav {
@@ -15,14 +15,13 @@
     display: flex;
     justify-content: space-between;
     padding: 1%;
-    border: 1px solid blue;
+    border: 1px solid grey;
 }
 
 .btn-container {
     width: 200px;
     display: flex;
     justify-content: space-between;
-    border: 1px solid green;
 }
 
 .prev-btn, .next-btn, .today-btn {
