@@ -1,9 +1,11 @@
 /**
  * JS calendar template using ToastUI framework.
  * 
- * Author: Filip J. Cierkosz
+ * index.js
  * 
- * Date: 07/2022
+ * @author: Filip J. Cierkosz
+ * 
+ * @version: 07/2022
  */
 
 
@@ -11,7 +13,6 @@ import React, { useCallback, useRef } from "react";
 import * as ReactDOMClient from 'react-dom/client';
 
 import Calendar from '@toast-ui/react-calendar';
-import '@toast-ui/calendar/dist/toastui-calendar.min.css';
 import 'tui-calendar/dist/tui-calendar.css';
 import 'tui-date-picker/dist/tui-date-picker.css';
 import 'tui-time-picker/dist/tui-time-picker.css';
@@ -146,7 +147,7 @@ class CalendarComponent extends React.Component {
 
   // handle clicking on the calendar grid
   onUpdateSchedule = (e, callback) => {
-    console.log("onAddSchedule : " + callback);
+    alert("onAddSchedule : " + callback);
   };
   
   render() {
