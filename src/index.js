@@ -1,5 +1,5 @@
 /**
- * Project name here...
+ * JS calendar template using ToastUI framework.
  * 
  * Author: Filip J. Cierkosz
  * 
@@ -26,6 +26,7 @@ import "./styles.css";
 
 
 class CalendarComponent extends React.Component {
+
   constructor(props) {
     super(props);
     this.calendarRef = React.createRef();
@@ -34,14 +35,86 @@ class CalendarComponent extends React.Component {
       { value: 'month', label: 'Monthly View' },
       { value: 'day', label: 'Daily View' }
     ];
+    this.schedules = [
+      {
+        id: '0',
+        name: 'Work',
+        color: '#ffffff',
+        bgColor: '#11ed2a',
+        dragBgColor: '#11ed2a',
+        borderColor: '#11ed2a'
+      },
+      {
+        id: '1',
+        name: 'Studies',
+        color: '#ffffff',
+        bgColor: '#ed1114',
+        dragBgColor: '#ed1114',
+        borderColor: '#ed1114'
+      },
+      {
+        id: '2',
+        name: 'Physical Activity',
+        color: '#ffffff',
+        bgColor: '#ed1114',
+        dragBgColor: '#ed1114',
+        borderColor: '#ed1114'
+      }
+    ];
+    this.calendars = [
+      {
+        id: "1",
+        name: "My Calendar",
+        color: "#ffffff",
+        bgColor: "#9e5fff",
+        dragBgColor: "#9e5fff",
+        borderColor: "#9e5fff"
+      },
+      {
+        id: "2",
+        name: "Company",
+        color: "#ffffff",
+        bgColor: "#00a9ff",
+        dragBgColor: "#00a9ff",
+        borderColor: "#00a9ff"
+      }
+    ];
     this.theme = {
       'week.timegridOneHour.height': '36px',
       'week.timegridHalfHour.height': '18px',
     };
     this.state = { 
-      selectedViewType: 'week', 
-      renderDate: ''
+      selectedViewType: 'month', 
+      renderDate: `${moment(new Date()).format('MMMM YYYY')}`
     };
+
+
+    // rather temp
+    // this.calendarOptions = {
+    //   taskView: false
+    // };
+  }
+
+  setupDateHeader = () => {
+    let currDate;
+    const startDate = this.calendarRef.current.getInstance().getDateRangeStart().toDate();
+    const endDate = this.calendarRef.current.getInstance().getDateRangeEnd().toDate();
+  
+    if (this.calendarRef.current.getInstance().getViewName() === 'day') {
+      currDate = moment(startDate).format('D MMMM YYYY');
+    } else if (this.calendarRef.current.getInstance().getViewName() === 'month') {
+      currDate = moment(startDate).add(15, "days").format('MMMM YYYY');
+    } else {
+      currDate = `${moment(startDate).format('D MMM YYYY')} - ${moment(endDate).format('D MMM YYYY')}`;
+    }
+
+    this.setState({ renderDate: currDate });
+  }
+
+  handleViewSelection = (currViewType) => {
+    this.setState({ selectedViewType: currViewType.value }, () => {
+      this.setupDateHeader();
+    });
   }
 
   handleShowPrev = () => {
@@ -62,64 +135,20 @@ class CalendarComponent extends React.Component {
     this.setupDateHeader();
   }
 
-  handleViewSelection = (currViewType) => {
-    this.setState({ selectedViewType: currViewType.value }, () => {
-      this.setupDateHeader();
-    });
-  }
-
-  setupDateHeader = () => {
-    let currDate;
-    const startDate = this.calendarRef.current.getInstance().getDateRangeStart().toDate();
-    const endDate = this.calendarRef.current.getInstance().getDateRangeEnd().toDate();
-  
-    if (this.calendarRef.current.getInstance().getViewName() === 'day') {
-      currDate = moment(startDate).format('D MMMM YYYY');
-    } else if (this.calendarRef.current.getInstance().getViewName() === 'month') {
-      currDate = moment(startDate).add(15, "days").format('MMMM YYYY');
-    } else {
-      currDate = `${moment(startDate).format('D MMM YYYY')} - ${moment(endDate).format('D MMM YYYY')}`;
-    }
-
-    this.setState({ renderDate: currDate });
-  }
-
-  // handle click on schedule
-  // onClickSchedule = useCallback((event) => {
-  //   const { calendarId, id } = event.schedule;
-  //   const el = cal.current.calendarInst.getElement(id, calendarId);
-
-  //   console.log(e, el.getBoundingClientRect());
-  // }, []);
-  // onClickSchedule = () => {
-  //   console.log('clicked the schedule...');
-  // }
-
-  // onBeforeCreateSchedule = () => {
-  //   console.log('before creation of new schedule...');
-  // }
-
-  handleCalendar = () => {
-    console.log('clicked calendar');
-    // this.calendarRef.current.getInstance().on({
-    //   'beforeCreateSchedule': function(event) {
-    //     // saveSchedule(event);
-    //     console.log('about to save something new...')
-    //   },
-    //   'beforeUpdateSchedule': function(event) {
-    //     const schedule = event.schedule;
-    //     const updates = event.changes;
-    //     //calendar.updateSchedule(schedule.id, schedule.calendarId, updates);
-    //     console.log('about to update something...')
-    //   },
-    //   'beforeDeleteSchedule': function(event) {
-    //     //calendar.deleteSchedule(event.schedule.id, event.schedule.calendarId);
-    //     console.log('about to delete some event...')
-    //   }
-    // });
-  }
   
 
+  
+
+
+
+
+
+
+  // handle clicking on the calendar grid
+  onUpdateSchedule = (e, callback) => {
+    console.log("onAddSchedule : " + callback);
+  };
+  
   render() {
     const { currViewType } = this.state;
 
@@ -140,7 +169,7 @@ class CalendarComponent extends React.Component {
           <Select
             className="view-selection"
             options={this.viewOptions}
-            defaultValue={{ value: 'week', label: 'Weekly View' }} 
+            defaultValue={{ value: 'month', label: 'Monthly View' }} 
             value={currViewType}
             onChange={this.handleViewSelection}
           />
@@ -157,44 +186,20 @@ class CalendarComponent extends React.Component {
           disableDblClick={true}
           disableClick={false}
           isReadOnly={false}
-          useCreationPopup
-          useDetailPopup
+          useCreationPopup={true}
+          useDetailPopup={true}
 
-          // functions to add events
-          onClickSchedule
-          onBeforeCreateSchedule
+          onUpdateSchedule={this.onUpdateSchedule}
+
+          // functions to manipulate calendar events
 
           // testing 
-          onClick={this.handleCalendar}
+          //onClickSchedule={this.onClickSchedule}
 
 
           // calendars
-          schedules = {[
-            {
-              id: '0',
-              name: 'Work',
-              color: '#ffffff',
-              bgColor: '#11ed2a',
-              dragBgColor: '#11ed2a',
-              borderColor: '#11ed2a'
-            },
-            {
-              id: '1',
-              name: 'Studies',
-              color: '#ffffff',
-              bgColor: '#ed1114',
-              dragBgColor: '#ed1114',
-              borderColor: '#ed1114'
-            },
-            {
-              id: '2',
-              name: 'Physical Activity',
-              color: '#ffffff',
-              bgColor: '#ed1114',
-              dragBgColor: '#ed1114',
-              borderColor: '#ed1114'
-            }
-          ]}
+          schedules={this.schedules}
+          calendars={this.calendars}
         />
       </div>
     );

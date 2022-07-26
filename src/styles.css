@@ -1,11 +1,14 @@
 #app {
     z-index: -1;
+    background-color: #0a0330;
 }
 
 .calendar-container {
+    z-index: 1;
+    background-color: white;
     width: 85%;
     margin: auto;
-    margin-top: 1%;
+    margin-top: 2%;
     border: 2px solid red;;
 }
 
